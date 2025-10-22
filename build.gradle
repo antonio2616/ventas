@@ -1,0 +1,17 @@
+plugins { id 'application' }
+
+repositories { mavenCentral() }
+
+dependencies {
+    implementation 'org.xerial:sqlite-jdbc:3.45.3.0'
+}
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+application { mainClass = 'com.ventas.App' }
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
