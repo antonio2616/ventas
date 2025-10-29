@@ -12,6 +12,7 @@ public class SalesPanel extends JPanel {
     private JComboBox<Product> cbProduct;
     private JTextField tfQty, tfSeller, tfUnitPrice, tfTotal;
     private DefaultTableModel model;
+    private JLabel lblStock;
 
     public SalesPanel() {
         setLayout(new BorderLayout(10,10));
@@ -55,6 +56,14 @@ public class SalesPanel extends JPanel {
         form.add(tfUnitPrice);
         form.add(tfTotal);
 
+        // 🔹 Etiqueta para mostrar el stock actual
+        lblStock = new JLabel("Stock actual: —");
+        lblStock.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblStock.setHorizontalAlignment(SwingConstants.LEFT);
+
+        JPanel stockPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        stockPanel.add(lblStock);
+
         // 🔹 Botones
         JButton btnVender = new JButton("Registrar Venta");
         btnVender.addActionListener(this::onSell);
@@ -73,6 +82,7 @@ public class SalesPanel extends JPanel {
         JTable table = new JTable(model);
 
         add(form, BorderLayout.NORTH);
+        add(stockPanel, BorderLayout.WEST); // 🔹 aquí agregamos la etiqueta
         add(new JScrollPane(table), BorderLayout.CENTER);
         add(actions, BorderLayout.SOUTH);
 
@@ -82,12 +92,15 @@ public class SalesPanel extends JPanel {
     }
 
     private void updatePrice() {
-        Product p = (Product) cbProduct.getSelectedItem();
-        if (p != null) {
-            tfUnitPrice.setText(String.valueOf(p.price));
-            updateTotal(); // recalcula también el total
+         Product p = (Product) cbProduct.getSelectedItem();
+            if (p != null) {
+                tfUnitPrice.setText(String.valueOf(p.price));
+                lblStock.setText("Stock actual: " + p.stock + " unidades");
+                    updateTotal();
+            } else {
+                lblStock.setText("Stock actual: —");
             }
-    }
+        }
 
     private void onSell(ActionEvent e) {
         Product p = (Product) cbProduct.getSelectedItem();
@@ -110,6 +123,8 @@ public class SalesPanel extends JPanel {
                 // 🔹 Volver a seleccionar el mismo producto actualizado
                 cbProduct.setSelectedItem(p);
                 updatePrice();
+
+                updatePrice(); // 🔹 actualiza el stock visible después de la venta
 
                 // 🔹 Limpiar campos
                 tfQty.setText("");
@@ -137,7 +152,7 @@ public class SalesPanel extends JPanel {
                 cbProduct.setSelectedItem(p);
             }
         }
-        updatePrice();
+        updatePrice(); // 🔹 actualiza el stock y precio del producto seleccionado
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
     }

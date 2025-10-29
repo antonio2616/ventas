@@ -6,6 +6,7 @@ import java.awt.*;
 public class MainFrame extends JFrame {
     private ProductsPanel productsPanel;
     private SalesPanel salesPanel;
+    private ReportsPanel reportsPanel;
 
     public MainFrame() {
         super("Control de Ventas e Inventario");
@@ -15,18 +16,20 @@ public class MainFrame extends JFrame {
 
         productsPanel = new ProductsPanel();
         salesPanel = new SalesPanel();
+        reportsPanel = new ReportsPanel();
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Productos", productsPanel);
         tabs.addTab("Ventas", salesPanel);
+        tabs.addTab("Reportes", reportsPanel);
 
         // 🔹 Cuando el usuario cambia de pestaña, recarga los datos visibles
         tabs.addChangeListener(e -> {
             int index = tabs.getSelectedIndex();
-            if (index == 0) {
-                productsPanel.reload();  // refresca lista de productos
-            } else if (index == 1) {
-                salesPanel.reloadProducts(); // refresca lista en ventas
+            switch (index) {
+                case 0 -> productsPanel.reload();
+                case 1 -> salesPanel.reloadProducts();
+                case 2 -> reportsPanel.reload();
             }
         });
 
