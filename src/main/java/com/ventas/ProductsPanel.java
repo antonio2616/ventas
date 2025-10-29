@@ -126,7 +126,7 @@ public class ProductsPanel extends JPanel {
         return Integer.parseInt(model.getValueAt(row, 0).toString());
     }
 
-    private void reload() {
+    public void reload() {
         try {
             List<Product> list = ProductDAO.listAll();
             model.setRowCount(0);
