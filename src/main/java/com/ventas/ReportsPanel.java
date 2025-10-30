@@ -34,12 +34,43 @@ public class ReportsPanel extends JPanel {
         // 🔹 Panel de búsqueda por fecha
         JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         datePanel.add(new JLabel("Consultar ventas del día (YYYY-MM-DD): "));
-        tfDate = new JTextField(10);
+         // 🔹 Selector de fecha (JDatePicker)
+       // 🔹 Selector de fecha (JDatePicker) con configuración completa
+java.util.Properties props = new java.util.Properties();
+props.put("text.today", "Hoy");
+props.put("text.month", "Mes");
+props.put("text.year", "Año");
+
+org.jdatepicker.impl.UtilDateModel model = new org.jdatepicker.impl.UtilDateModel();
+org.jdatepicker.impl.JDatePanelImpl datePanelPicker =
+        new org.jdatepicker.impl.JDatePanelImpl(model, props);
+org.jdatepicker.impl.JDatePickerImpl datePicker =
+        new org.jdatepicker.impl.JDatePickerImpl(datePanelPicker,
+                new javax.swing.JFormattedTextField.AbstractFormatter() {
+                    private final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+
+                    @Override
+                    public Object stringToValue(String text) throws java.text.ParseException {
+                        return sdf.parse(text);
+                    }
+
+                    @Override
+                    public String valueToString(Object value) {
+                        if (value != null) {
+                            java.util.Calendar cal = (java.util.Calendar) value;
+                            return sdf.format(cal.getTime());
+                        }
+                        return "";
+                    }
+                });
+
         JButton btnSearch = new JButton("Buscar");
-        btnSearch.addActionListener(e -> searchByDate());
-        datePanel.add(tfDate);
+        btnSearch.addActionListener(e -> searchByDate(datePicker));
+
+        datePanel.add(datePicker);
         datePanel.add(btnSearch);
         datePanel.add(lblByDate);
+
 
         top.add(totalsPanel);
         top.add(datePanel);
@@ -101,26 +132,30 @@ public class ReportsPanel extends JPanel {
         }
     }
 
-    // 🔹 Buscar ventas por fecha (YYYY-MM-DD)
-    private void searchByDate() {
-        String dateStr = tfDate.getText().trim();
-        if (dateStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, escribe una fecha (ejemplo: 2025-10-20)");
-            return;
-        }
-
-        String sql = "SELECT COALESCE(SUM(total),0) FROM sales WHERE date(date)=?";
-        try (Connection c = Database.getConnection();
-             PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, dateStr);
-            try (ResultSet rs = ps.executeQuery()) {
-                double total = rs.next() ? rs.getDouble(1) : 0.0;
-                lblByDate.setText(String.format("Ventas en %s: $%.2f", dateStr, total));
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this, "Error al consultar la fecha: " + e.getMessage());
-        }
+    // 🔹 Buscar ventas por fecha (Selector)
+    private void searchByDate(org.jdatepicker.impl.JDatePickerImpl datePicker) {
+    java.util.Date selected = (java.util.Date) datePicker.getModel().getValue();
+    if (selected == null) {
+        JOptionPane.showMessageDialog(this, "Por favor, selecciona una fecha.");
+        return;
     }
+
+    // Convertir a formato YYYY-MM-DD
+    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+    String dateStr = sdf.format(selected);
+
+    String sql = "SELECT COALESCE(SUM(total),0) FROM sales WHERE date(date)=?";
+    try (Connection c = Database.getConnection();
+         PreparedStatement ps = c.prepareStatement(sql)) {
+        ps.setString(1, dateStr);
+        try (ResultSet rs = ps.executeQuery()) {
+            double total = rs.next() ? rs.getDouble(1) : 0.0;
+            lblByDate.setText(String.format("Ventas en %s: $%.2f", dateStr, total));
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error al consultar la fecha: " + e.getMessage());
+    }
+}
 
     // 🔹 Productos con stock bajo
     private List<Product> lowStock(int threshold) throws SQLException {
