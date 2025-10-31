@@ -1,6 +1,9 @@
 package com.ventas;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 public class Database {
     // Ruta del archivo de base de datos
@@ -38,6 +41,19 @@ public class Database {
                     seller TEXT,
                     FOREIGN KEY(product_id) REFERENCES products(id)
                 )
+            """);
+
+            // Tabla de compras
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS purchases (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    product_id INTEGER,
+                    quantity INTEGER,
+                    unit_cost REAL,
+                    total REAL,
+                    date TEXT DEFAULT (datetime('now','localtime')),
+                    FOREIGN KEY(product_id) REFERENCES products(id)
+                );
             """);
 
             System.out.println("✅ Base de datos inicializada correctamente.");

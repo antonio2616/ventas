@@ -1,12 +1,15 @@
 package com.ventas;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+import javax.swing.JTabbedPane;
 
 public class MainFrame extends JFrame {
     private ProductsPanel productsPanel;
     private SalesPanel salesPanel;
     private ReportsPanel reportsPanel;
+    private PurchasesPanel purchasesPanel;
 
     public MainFrame() {
         super("Control de Ventas e Inventario");
@@ -17,11 +20,13 @@ public class MainFrame extends JFrame {
         productsPanel = new ProductsPanel();
         salesPanel = new SalesPanel();
         reportsPanel = new ReportsPanel();
+        purchasesPanel = new PurchasesPanel();
 
         JTabbedPane tabs = new JTabbedPane();
         tabs.addTab("Productos", productsPanel);
         tabs.addTab("Ventas", salesPanel);
         tabs.addTab("Reportes", reportsPanel);
+        tabs.addTab("Compras", purchasesPanel);
 
         // 🔹 Cuando el usuario cambia de pestaña, recarga los datos visibles
         tabs.addChangeListener(e -> {
@@ -30,6 +35,7 @@ public class MainFrame extends JFrame {
                 case 0 -> productsPanel.reload();
                 case 1 -> salesPanel.reloadProducts();
                 case 2 -> reportsPanel.reload();
+                case 3 -> purchasesPanel.reload();
             }
         });
 
