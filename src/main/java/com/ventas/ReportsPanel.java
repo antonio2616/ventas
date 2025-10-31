@@ -21,11 +21,14 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+
+
 
 public class ReportsPanel extends JPanel {
 
@@ -201,8 +204,33 @@ public class ReportsPanel extends JPanel {
 
             doc.add(new Paragraph("CONTROL DE VENTAS - REPORTE GENERAL",
                     FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18)));
-            doc.add(new Paragraph("Fecha de generación: " + new java.util.Date()));
-            doc.add(new Paragraph(" "));
+           // 🔹 Formato limpio de fechas
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("dd/MM/yyyy");
+                String fechaGeneracion = sdf.format(new java.util.Date());
+
+            // Detectar rango actual mostrado (por las fechas seleccionadas)
+                java.util.Date start = (java.util.Date) startPicker.getModel().getValue();
+                java.util.Date end = (java.util.Date) endPicker.getModel().getValue();
+                String rangoTexto = "";
+                    if (start != null && end != null) {
+                        rangoTexto = "Rango del reporte: " + sdf.format(start) + " al " + sdf.format(end);
+                        }
+            // 🔹 Insertar logo en el PDF (si existe)
+            try {
+                String logoPath = "src/main/resources/logo.png"; // ruta del logo
+                com.itextpdf.text.Image logo = com.itextpdf.text.Image.getInstance(logoPath);
+                logo.scaleToFit(80, 80);
+                logo.setAlignment(Element.ALIGN_LEFT);
+                doc.add(logo);
+            } catch (Exception ex) {
+                System.out.println("⚠️ No se pudo cargar el logo en el PDF: " + ex.getMessage());
+                }
+
+            // Encabezado limpio
+                doc.add(new Paragraph("📄 REPORTE GENERAL DE MOVIMIENTOS", FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18)));
+                doc.add(new Paragraph("Fecha de generación: " + fechaGeneracion));
+                if (!rangoTexto.isEmpty()) doc.add(new Paragraph(rangoTexto));
+                doc.add(new Paragraph(" "));
 
             // 🔸 Totales generales
             doc.add(new Paragraph(String.format("Total Ventas: $%.2f", totalSales)));

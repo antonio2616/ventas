@@ -1,7 +1,9 @@
 package com.ventas;
 
 import java.awt.BorderLayout;
+import java.awt.Image;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
@@ -14,8 +16,17 @@ public class MainFrame extends JFrame {
     public MainFrame() {
         super("Control de Ventas e Inventario");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(950, 600);
+        setSize(1000, 600);
         setLocationRelativeTo(null);
+
+        // 🔹 Establecer ícono de la ventana
+        try {
+            Image icon = new ImageIcon(getClass().getResource("/logo.png")).getImage();
+            setIconImage(icon);
+        } catch (Exception e) {
+            System.out.println("⚠️ No se encontró el archivo de logo.");
+        }
+
 
         productsPanel = new ProductsPanel();
         salesPanel = new SalesPanel();
