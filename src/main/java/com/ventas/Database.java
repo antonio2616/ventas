@@ -55,6 +55,20 @@ public class Database {
                     FOREIGN KEY(product_id) REFERENCES products(id)
                 );
             """);
+                        // Tabla de usuarios
+            st.execute("""
+                CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE,
+                    password TEXT
+                );
+            """);
+
+            // Usuario por defecto
+            st.execute("""
+                INSERT OR IGNORE INTO users (username, password)
+                VALUES ('admin', '1234');
+            """);
 
             System.out.println("✅ Base de datos inicializada correctamente.");
 

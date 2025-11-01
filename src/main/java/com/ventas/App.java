@@ -6,16 +6,15 @@ public class App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Aplica el tema del sistema (Windows)
+                // Aplica el tema del sistema (Windows o del entorno)
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception ignored) {}
 
-            // ✅ Inicializa base de datos
-            Database.init();
+            // ✅ Inicializa la base de datos
+            Database.init(); // usa tu método actual initialize()
 
-            // ✅ Abre la ventana principal con pestañas
-            JFrame frame = new MainFrame();
-            frame.setVisible(true);
+            // ✅ Muestra la ventana de inicio de sesión primero
+            new LoginFrame().setVisible(true);
         });
     }
 }
